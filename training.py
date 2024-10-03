@@ -58,7 +58,7 @@ print(f"Average R-squared score from cross-validation: {cv_scores.mean()}")
 #data['Predicted_Flare_Time'] = best_model.predict(X)
 #data.to_csv('dataset_with_predictions.csv', index=False)
 
-print("Dataset with predictions saved as 'dataset_with_predictions.csv'.")
+#print("Dataset with predictions saved as 'dataset_with_predictions.csv'.")
 
 # Save the trained model
 joblib.dump(best_model, 'flare_predictor.pkl')
