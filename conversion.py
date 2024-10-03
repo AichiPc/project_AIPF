@@ -5,14 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 file_path = 'flaredataset.csv'
 df = pd.read_csv(file_path)
 
-# Handle missing values: choose one method
-# Option 1: Drop rows with missing values
-# df = df.dropna()
-
-# Option 2: Fill missing values with a constant
-#df = df.fillna(0)  # You can also use 'unknown' for categorical columns if necessary
-
-# Option 3: Fill missing numeric values with the column mean, and categorical with the mode
+# Handle missing values
 for col in df.columns:
     if df[col].dtype == 'object':  # For categorical columns
         df[col].fillna(df[col].mode()[0], inplace=True)
@@ -39,10 +32,29 @@ for col in binary_columns:
 # Apply One-Hot Encoding to multi-category columns
 df_encoded = pd.get_dummies(df_cleaned, columns=multi_category_columns)
 
+# Mapping of frequencies to days based on the given flare frequencies
+frequency_mapping = {
+    'Flare Frequency_1 per month': 30,        # 1 flare per month = 30 days
+    'Flare Frequency_1 per year': 365,        # 1 flare per year = 365 days
+    'Flare Frequency_2 per month': 15,        # 2 flares per month = 15 days
+    'Flare Frequency_2 per year': 182.5,      # 2 flares per year = 182.5 days
+    'Flare Frequency_3 per month': 10,        # 3 flares per month = 10 days
+    'Flare Frequency_4 per year': 91.25,      # 4 flares per year = 91.25 days
+    'Flare Frequency_5 per month': 6,         # 5 flares per month = 6 days
+}
+
+# Check if relevant Flare Frequency columns are present
+days_until_next_flare = 0
+for col, days in frequency_mapping.items():
+    if col in df_encoded.columns:
+        days_until_next_flare += df_encoded[col] * days
+
+df_encoded['Days_Until_Next_Flare'] = days_until_next_flare
+
 # Convert boolean values to integers (0 and 1)
 df_encoded = df_encoded.astype(int)
 
 # Save the processed dataset
-df_encoded.to_csv('conv.csv', index=False)
+df_encoded.to_csv('conv3.csv', index=False)
 
-print(f"Processed dataset saved to: {'conv.csv'}")
+print(f"Processed dataset with 'Days Until Next Flare' saved to: {'conv3.csv'}")
